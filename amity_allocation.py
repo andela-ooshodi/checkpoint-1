@@ -173,6 +173,5 @@ class Result(object):
         print self.sorting.unsorted_livinglist
 
 
-if __name__ == "__main__":
-    result = Result()
-    result.allocation_result()
+result = Result()
+result.allocation_result()

@@ -6,8 +6,8 @@ class TestOfficeSpaceAllocation(unittest.TestCase):
 
     def setUp(self):
         self.sorting = Sorting()
+        self.sorting.assort()
         self.result = Result()
-        self.result.allocation_result()
 
     def test_number_of_people_allocated_to_offices(self):
         self.assertLessEqual(
