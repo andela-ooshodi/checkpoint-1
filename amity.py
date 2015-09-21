@@ -1,71 +1,10 @@
 '''
 A room allocation system for Amity.
-
 By Olufunmilade Oshodi.
+
+Logic file for allocation in Amity
 '''
-
-
-class Space(object):
-    max_size = 0
-
-    def __init__(self, name):
-        self.name = name
-
-
-class Office(Space):
-    max_size = 6
-    office_dic = {}
-
-    def set_room(self):
-        self.office_dic[self.name] = []
-
-    def get_members(self):
-        return self.office_dic[self.name]
-
-    def current_size(self):
-        return len(self.office_dic[self.name])
-
-
-class Living(Space):
-    max_size = 4
-    living_dic = {}
-
-    def set_room(self):
-        self.living_dic[self.name] = []
-
-    def get_members(self):
-        return self.living_dic[self.name]
-
-    def current_size(self):
-        return len(self.living_dic[self.name])
-
-
-class Person(object):
-
-    def __init__(self, name):
-        self.name = name
-
-
-class Staff(Person):
-    staff_list = []
-
-    def set_staff(self):
-        self.staff_list.append(self.name)
-
-
-class Fellow(Person):
-    male_list = []  # list for allocation to male rooms
-    female_list = []  # list for allocation to female rooms
-    mixed_list = []  # list for no allocation to living space
-
-    def set_male(self):
-        self.male_list.append(self.name)
-
-    def set_female(self):
-        self.female_list.append(self.name)
-
-    def set_mixed(self):
-        self.mixed_list.append(self.name)
+from models import Office, Living, Staff, Fellow
 
 
 class Amity(object):
@@ -76,11 +15,12 @@ class Amity(object):
 
     def input_parser(self):
         # reads through a file to get the list of people to be allocated
+        self.filename = 'input.txt'
         self.male_input_list = []
         self.female_input_list = []
         self.mixed_input_list = []
         self.staffs_input_list = []
-        with open('input.txt', 'r') as f:
+        with open(self.filename, 'r') as f:
             count = sum(1 for line in f)
             # move the file pointer back to the beginning of the file
             f.seek(0)
@@ -207,38 +147,3 @@ class Amity(object):
     def get_living_unallocated(self):
         # function to return those not allocated to a living space
         return self.male_input_list + self.female_input_list
-
-
-class Engine(object):
-    # This engine class runs the program and also for formatting the output
-
-    def __init__(self):
-        self.amity = Amity()
-
-    def run(self):
-        self.amity.preload()
-        self.amity.add_room()
-        self.amity.input_parser()
-        self.amity.allocation()
-
-        for room in self.amity.rooms['office']:
-            office = Office(room)
-            print "%s office:" % room
-            print office.get_members()
-            print
-
-        for room in self.amity.rooms['living']:
-            living = Living(room)
-            print "%s room:" % room
-            print living.get_members()
-            print
-
-        print "Staffs and Fellows without office space:"
-        print self.amity.get_office_unallocated()
-        print
-        print "Fellows without living space:"
-        print self.amity.get_living_unallocated()
-
-
-allocation = Engine()
-allocation.run()

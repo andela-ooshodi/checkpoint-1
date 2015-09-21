@@ -1,8 +1,9 @@
 import unittest
-from office_space_challenge import Amity, Office, Living, Staff, Fellow
+from amity import Amity
+from models import Office, Living, Staff, Fellow
 
 
-class TestSpaceAndPersonClass(unittest.TestCase):
+class TestModels(unittest.TestCase):
 
     def setUp(self):
         self.office = Office('office')
@@ -85,7 +86,7 @@ class TestSpaceAndPersonClass(unittest.TestCase):
         ), 4, msg="The function should return the current number of members in that living space")
 
 
-class TestAmityAllocation(unittest.TestCase):
+class TestAmity(unittest.TestCase):
 
     def setUp(self):
         self.amity = Amity()
@@ -163,7 +164,6 @@ class TestAmityAllocation(unittest.TestCase):
                           msg="The function should return an updated list of instances of 'Fellow' class")
         self.assertEquals(self.amity.get_fellows_not_living_in_amity(), self.amity.mixed_input_list,
                           msg="The function should return an updated list of instances of 'Fellow' class")
-
 
 
 if __name__ == '__main__':
