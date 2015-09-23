@@ -9,8 +9,8 @@ Design an automatic allocation system for amity
 This app models a room allocation system for Amity.
 
 Amity has been preloaded with ten offices and ten living rooms.
-Each Office has a maximum size of 6 occupants.
-Each Room has a maximum size of 4 occupants and it is gender specific.
+* Each Office has a maximum size of 6 occupants.
+* Each Room has a maximum size of 4 occupants and it is gender specific.
 
 Staffs are not allocated rooms while Fellows can opt for being allocated a room or not.
 
