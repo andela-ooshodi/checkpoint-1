@@ -17,7 +17,7 @@ Staffs are not allocated rooms while Fellows can opt for being allocated a room 
 ### Getting Started
 ## Structure of the project
 The project structure is divided into models, logic and view following an MVC format where:
-* models.py is models
+* models.py is the models
 * amity.py is the controller(logic) 
 * view.py is the view
 
