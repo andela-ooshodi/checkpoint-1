@@ -16,18 +16,17 @@ Staffs are not allocated rooms while Fellows can opt for being allocated a room 
 
 ### Getting Started
 ## Structure of the project
-The project structure is divided into models, logic and view following an MVC format where:
-* models.py is the models
-* amity.py is the controller(logic) 
-* view.py is the view
+The project structure is divided into models and logic:
+* models.py is the Allocation models for Amity
+* amity.py is the Allocation logic for Amity 
 
-Run the app from the view.py file on your terminal
-`python view.py` 
+To run the app
+`python amity.py <inputfile.txt>` 
 
-This prints out a formatted result on your terminal
+This automatically allocates based on the input text file and prints out a formatted result on your terminal
 
-To save the result in a .txt file instead, run
-`python view.py > result.txt`
+To save the result in a .txt file (e.g results.txt) instead, run
+`python amity.py > result.txt`
 
 ### Tests
 Install a virtual environment using
@@ -51,6 +50,9 @@ Install the necessary requirements within the virtual environment
 
 Run coverage
 `coverage run test.py`
+
+View the report of the coverage on your terminal
+`coverage report`
 
 Produce the html of coverage result
 `coverage html`
