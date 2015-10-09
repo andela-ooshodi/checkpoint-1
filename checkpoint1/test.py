@@ -17,6 +17,14 @@ class TestAmityModels(unittest.TestCase):
         self.kate = Fellow('Kate', 'F')
         self.sayo = Fellow('Sayo', 'F')
 
+        self.office.add_member(self.chidi)
+        self.office.add_member(self.seyi)
+        self.office.add_member(self.lady_seyi)
+        self.male_room.add_member(self.lade)
+        self.male_room.add_member(self.fisayo)
+        self.female_room.add_member(self.sayo)
+        self.female_room.add_member(self.kate)
+
     def test_office_instance(self):
         self.assertIsInstance(
             self.office, Office,
@@ -65,58 +73,18 @@ class TestAmityModels(unittest.TestCase):
             msg="The object should be a type of 'Fellow'"
         )
 
-    def test_can_return_members_of_office(self):
-        self.office.add_member(self.chidi)
-        self.office.add_member(self.seyi)
-        self.office.add_member(self.lady_seyi)
-        members = ['Chidi #M', 'Seyi #M', 'Seyi #F']
-        self.assertEquals(self.office.get_members(
-        ), members, msg="The function should return the members in that office")
-
     def test_can_return_current_size_of_office(self):
-        self.office.add_member(self.chidi)
-        self.office.add_member(self.seyi)
-        self.office.add_member(self.lady_seyi)
         self.assertEquals(self.office.current_size(
         ), 3, msg="The function should return the current number of members in that office")
 
-    def test_can_return_members_of_living(self):
-        self.male_room.add_member(self.lade)
-        self.male_room.add_member(self.fisayo)
-        self.female_room.add_member(self.sayo)
-        self.female_room.add_member(self.kate)
-        male_members = ['Lade #M', 'Fisayo #M']
-        female_members = ['Sayo #F', 'Kate #F']
-        self.assertEquals(self.male_room.get_members(
-        ), male_members, msg="The function should return the members in that living space")
-        self.assertEquals(self.female_room.get_members(
-        ), female_members, msg="The function should return the members in that living space")
-
     def test_can_return_current_size_of_living(self):
-        self.male_room.add_member(self.lade)
-        self.male_room.add_member(self.fisayo)
-        self.female_room.add_member(self.sayo)
-        self.female_room.add_member(self.kate)
         self.assertEquals(self.male_room.current_size(
         ), 2, msg="The function should return the current number of members in that living space")
         self.assertEquals(self.female_room.current_size(
-        ), 2, msg="The function should return the current number of members in that living space")\
+        ), 2, msg="The function should return the current number of members in that living space")
 
 
-    def test_room_class_exceptions(self):
-        self.assertRaises(
-            AttributeError, Office('TestOffice').add_member('testmember'))
-
-    def test_living_class_exceptions(self):
-        with self.assertRaises(ValueError):
-            Living('TestLiving', 'testdesignation')
-
-    def test_person_class_exceptions(self):
-        with self.assertRaises(ValueError):
-            Staff('TestStaff', 'testgender')
-
-
-class TestPreloadedAmity(unittest.TestCase):
+class TestAmity(unittest.TestCase):
 
     def setUp(self):
         self.amity = Amity()
@@ -125,6 +93,12 @@ class TestPreloadedAmity(unittest.TestCase):
         args = self.parser.parse_args(["input.txt"])
         self.amity.inputfile = args.inputfile
         self.amity.inputfile_reader()
+        self.amity.allocate()
+
+    def tearDown(self):
+        del self.amity.rooms['office']
+        del self.amity.rooms['living']
+        self.amity.people = []
 
     def test_script_with_empty_args(self):
         with self.assertRaises(SystemExit):
@@ -136,85 +110,25 @@ class TestPreloadedAmity(unittest.TestCase):
         self.assertEqual(len(
             self.amity.rooms['office']), 10, msg="Amity should be preloaded with 10 offices")
 
-    def test_allocation_from_inputfile(self):
+    def test_number_of_persons_from_input(self):
+        self.assertEquals(len(self.amity.people), 64)
+
+    def test_members_of_room(self):
+        self.assertLessEqual(
+            len(self.amity.rooms['office'][0].get_members()), 6)
+        self.assertLessEqual(
+            len(self.amity.rooms['living'][0].get_members()), 4)
+
+    def test_current_size_of_room(self):
         self.assertLessEqual(self.amity.rooms['office'][0].current_size(), 6)
         self.assertLessEqual(self.amity.rooms['living'][9].current_size(), 4)
 
     def test_unallocated(self):
-        self.assertGreaterEqual(len(self.amity.get_unallocated()['living']), 0)
-        self.assertGreaterEqual(len(self.amity.get_unallocated()['office']), 0)
+        self.assertGreaterEqual(len(self.amity.unallocated['living']), 0)
+        self.assertGreaterEqual(len(self.amity.unallocated['office']), 0)
 
-
-class TestAmity(unittest.TestCase):
-
-    def setUp(self):
-        self.amity = Amity()
-
-        # create and allocate Staffs and Fellows
-        self.chidi = Staff('Chidi', 'M')
-        self.lady_chi = Staff('Chidimma', 'f')
-        self.laide = Fellow('Laide', 'f')
-        self.laide.choice = 'Y'
-        self.rukky = Fellow('Rukkie', 'f')
-        self.olaide = Fellow('Olaide', 'm')
-        self.olaide.choice = 'y'
-
-    def test_total_number_of_people_allocated_to_offices(self):
-        self.amity.allocate(self.chidi)
-        self.amity.allocate(self.lady_chi)
-        self.amity.allocate(self.laide)
-        self.amity.allocate(self.rukky)
-        self.amity.allocate(self.olaide)
-        members = []
-        for x in range(len(self.amity.rooms['office'])):
-            members.extend(self.amity.rooms['office'][x].get_members())
-        self.assertEquals(len(
-            members), 5, msg="Only the total number of persons allocated should be returned")
-
-    def test_total_number_of_residents(self):
-        self.amity.allocate(self.chidi)
-        self.amity.allocate(self.lady_chi)
-        self.amity.allocate(self.laide)
-        self.amity.allocate(self.rukky)
-        self.amity.allocate(self.olaide)
-        members = []
-        for x in range(len(self.amity.rooms['living'])):
-            members.extend(self.amity.rooms['living'][x].get_members())
-        self.assertEquals(len(
-            members), 2, msg="Only fellows who opted for living spaces should be residents")
-
-    def test_add_room(self):
-        # create Offices and Rooms
-        gold = Office('Gold')
-        helium = Office('Helium')
-        mars = Living('Mars', 'male')
-        venus = Living('Venus', 'female')
-        self.amity.add_room(gold)
-        self.amity.add_room(helium)
-        self.amity.add_room(mars)
-        self.amity.add_room(venus)
-
-        self.assertEqual(len(self.amity.rooms[
-                         'living']), 2, msg="Only rooms added to Amity should be returned")
-        self.assertEqual(len(self.amity.rooms[
-                         'office']), 2, msg="Only rooms added to Amity should be returned")
-        self.assertRaises(
-            AttributeError, self.amity.add_room('TestRoom'))
-
-    def test_get_rooms(self):
-        self.assertEquals(len(self.amity.get_rooms()), 4,
-                          msg="Amity should contain rooms that have been added in it")
-
-    def test_add_new_type_of_room(self):
-        training = Room('Training')
-        training.room_type = 'training'
-        self.amity.add_room(training)
-        self.assertTrue(self.amity.rooms['training'])
-        del self.amity.rooms['training']
-
-    def test_allocation_exceptions(self):
-        with self.assertRaises(ValueError):
-            self.amity.allocate('TestPerson')
+    def test_total_number_of_romms_in_Amity(self):
+        self.assertEquals(len(self.amity.get_rooms()), 20)
 
 
 if __name__ == '__main__':

@@ -20,6 +20,9 @@ The project structure is divided into models and logic:
 * models.py is the Allocation models for Amity
 * amity.py is the Allocation logic for Amity 
 
+For help on running the app
+`python amity.py <inputfile.txt> -h --help` 
+
 To run the app
 `python amity.py <inputfile.txt>` 
 

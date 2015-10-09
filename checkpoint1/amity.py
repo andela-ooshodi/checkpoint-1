@@ -4,14 +4,23 @@ By Olufunmilade Oshodi.
 
 Allocation Logic for Amity
 '''
-import random
 import argparse
 
 from models import Office, Living, Staff, Fellow
 
 
 class Amity(object):
-    rooms = {}
+    rooms = {
+        'office': [],
+        'living': [],
+    }
+    unallocated = {
+        'office': [],
+        'living': [],
+    }
+    people = []
+    office_pointer = 0
+    living_pointer = 0
 
     def prepopulate(self):
         '''
@@ -21,14 +30,11 @@ class Amity(object):
                   'Foundry', 'Furnace', 'Boiler', 'Mint', 'Vulcan']
         living = ['Topaz', 'Silver', 'Gold', 'Onyx', 'Opal',
                   'Ruby', 'Platinium', 'Jade', 'Pearl', 'Diamond']
-        self.rooms['office'] = []
-        self.rooms['living'] = []
+
         for item in office:
-            self.rooms['office'].append(Office(item))
-        for item in living[:5]:
-            self.rooms['living'].append(Living(item, 'male'))
-        for item in living[5:]:
-            self.rooms['living'].append(Living(item, 'female'))
+            self.add_room(Office(item))
+        for item in living:
+            self.add_room(Living(item))
 
     def add_room(self, room):
         '''
@@ -45,9 +51,16 @@ class Amity(object):
             print "Can't determine if {} is".format(room),
             print "an 'office' or a 'living space'"
 
+    def add_person(self, person):
+        '''
+        Adds people to Amity
+        '''
+        if person not in self.people:
+            self.people.append(person)
+
     def get_rooms(self):
         '''
-        Returns all available rooms in Amity
+        Returns all rooms in Amity
         '''
         amity_rooms = []
         for key in self.rooms:
@@ -56,35 +69,98 @@ class Amity(object):
                     values.name + "({})".format(values.room_type))
         return amity_rooms
 
-    def allocate(self, person):
+    def get_next_office(self):
+        '''
+        Returns the next available office in Amity
+        '''
+        try:
+            office = self.rooms['office'][self.office_pointer]
+            if office.is_occupied():
+                self.office_pointer += 1
+                office = self.rooms['office'][self.office_pointer]
+            return office
+        except IndexError:
+            return None
+
+    def assign_office(self, person):
+        '''
+        Assigns a person to an Office
+        '''
+        office = self.get_next_office()
+        if office is not None:
+            office.add_member(person)
+            person.assign_office(office)
+            return True
+        else:
+            return False
+
+    def get_next_living_space(self):
+        '''
+        Returns the next available livingspace in Amity
+        '''
+        self.default_pointer = self.living_pointer
+        try:
+            living = self.rooms['living'][self.living_pointer]
+            if living.is_occupied():
+                self.living_pointer += 1
+                living = self.rooms['living'][self.living_pointer]
+            return living
+        except IndexError:
+            return None
+
+    def get_another_living_space(self):
+        '''
+        Returns the next available gender specific livingspace in Amity
+        '''
+        try:
+            self.living_pointer += 1
+            living = self.rooms['living'][self.living_pointer]
+            if not living.is_occupied():
+                self.living_pointer = self.default_pointer
+                return living
+            else:
+                self.get_another_living_space()
+        except IndexError:
+            return None
+
+    def assign_living_space(self, person):
+        '''
+        Assigns a person to a livingspace
+        '''
+        living = self.get_next_living_space()
+        try:
+            if living is not None:
+                if living.designation is None:
+                    living.designation = person.gender
+
+                elif living.designation != person.gender:
+                    living = self.get_another_living_space()
+                    living.designation = person.gender
+
+                living.add_member(person)
+                person.assign_living_space(living)
+                return True
+
+            else:
+                return False
+        except AttributeError:
+            return False
+
+    def allocate(self):
         '''
         Allocates staffs and fellows
         '''
-        for key in self.rooms:
-            random.shuffle(self.rooms[key])
-            for room in self.rooms[key]:
-                if isinstance(person, Fellow):
-                    if person.choice == "Y" or person.choice == "y":
-                        if room.room_type == 'living':
-                            if room.current_size() < room.max_size:
-                                if person.gender == 'M' and room.designation == 'male':
-                                    room.add_member(person)
-                                    break
-                                elif person.gender == 'F' and room.designation == 'female':
-                                    room.add_member(person)
-                                    break
-                if isinstance(person, Staff) or isinstance(person, Fellow):
-                    if room.room_type == 'office':
-                        if room.current_size() < room.max_size:
-                            room.add_member(person)
-                            break
-                else:
-                    raise ValueError(
-                        "Can't allocate, undetermined if either a staff or fellow")
+        for person in self.people:
+            if person.office is None:
+                if not self.assign_office(person):
+                    self.unallocated['office'].append(person)
+            if isinstance(person, Fellow) and person.choice.upper() == 'Y' and person.livingspace is None:
+                if not self.assign_living_space(person):
+                    self.unallocated['living'].append(person)
 
     def inputfile_reader(self):
         '''
-        Reads the inputfile passed to Amity to allocate
+        Reads the inputfile
         '''
         with open(self.inputfile, 'r') as f:
             for line in f:
@@ -95,48 +171,13 @@ class Amity(object):
                     firstname, lastname, gender, status, choice = map(
                         str, line)
                     name = firstname + " " + lastname
-                    individual = Fellow(name, gender)
-                    individual.choice = choice
-                    self.allocate(individual)
+                    person = Fellow(name, gender, choice)
                 else:
                     firstname, lastname, gender, status = map(str, line)
                     name = firstname + " " + lastname
-                    individual = Staff(name, gender)
-                    self.allocate(individual)
+                    person = Staff(name, gender)
 
-    def get_unallocated(self):
-        '''
-        Returns a list of unallocated individuals in Amity
-        '''
-        category = {}
-        category['office'] = []
-        category['living'] = []
-        with open(self.inputfile, 'r') as f:
-            for line in f:
-                line = line.split()
-                name = line[0] + " " + line[1]
-                gender = line[2]
-                category['office'].append(" #".join([name, gender]))
-                status = line[3]
-                status = status.upper()
-                if status == "FELLOW":
-                    choice = line[4]
-                    choice = choice.upper()
-                    if choice == "Y":
-                        category['living'].append(" #".join([name, gender]))
-
-        allocated = {}
-        for key in self.rooms:
-            allocated[key] = []
-            for values in self.rooms[key]:
-                allocated[key].extend(values.get_members())
-
-        unallocated = {}
-        for key in allocated:
-            unallocated[key] = [
-                item for item in category[key] if item not in allocated[key]]
-
-        return unallocated
+                self.add_person(person)
 
     def create_parser(self):
         '''
@@ -155,17 +196,32 @@ class Amity(object):
         args = parser.parse_args()
         self.inputfile = args.inputfile
 
+    def print_result(self):
+        '''
+        Prints result of allocation
+        '''
+        for key in self.rooms:
+            for values in self.rooms[key]:
+                print values.name, "({0}, {1})".format(values.designation, values.room_type.upper())
+                print values.get_members()
+                print
+
+    def print_unallocated(self):
+        '''
+        Prints a persons not allocated
+        '''
+        print "After Allocation, the following could not be allocated"
+        for key in self.unallocated:
+            print "{}:".format(key)
+            person = [person.name for person in self.unallocated[key]]
+            print person
+            print
+
 if __name__ == '__main__':
     amity = Amity()
     amity.main()
     amity.prepopulate()
     amity.inputfile_reader()
-
-    for key in amity.rooms:
-        for values in amity.rooms[key]:
-            print values.name, "({0}, {1})".format(values.designation, values.room_type.upper())
-            print values.get_members()
-            print
-
-    print "After Allocation, the following could not be allocated"
-    print amity.get_unallocated()
+    amity.allocate()
+    amity.print_result()
+    amity.print_unallocated()
