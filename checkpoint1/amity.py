@@ -10,6 +10,12 @@ from models import Office, Living, Staff, Fellow
 
 
 class Amity(object):
+
+    '''
+    Amity Class models the real life entity "Amity",
+    defined by it's rooms and people data
+    and it's methods(behaviors) that act on it's data
+    '''
     rooms = {
         'office': [],
         'living': [],
@@ -66,7 +72,7 @@ class Amity(object):
         for key in self.rooms:
             for values in self.rooms[key]:
                 amity_rooms.append(
-                    values.name + "({})".format(values.room_type))
+                    "{} ({})".format(values.name, values.room_type))
         return amity_rooms
 
     def get_next_office(self):
@@ -165,8 +171,7 @@ class Amity(object):
         with open(self.inputfile, 'r') as f:
             for line in f:
                 line = line.split()
-                status = line[3]
-                status = status.upper()
+                status = line[3].upper()
                 if status == "FELLOW":
                     firstname, lastname, gender, status, choice = map(
                         str, line)
@@ -201,12 +206,12 @@ class Amity(object):
         Prints result of allocation
         '''
         print "Result:"
-        print
+        print "\n"
         for key in self.rooms:
             for values in self.rooms[key]:
                 print values.name, "({0}, {1})".format(values.designation, values.room_type.upper())
                 print values.get_members()
-                print
+                print "\n"
 
     def print_unallocated(self):
         '''
