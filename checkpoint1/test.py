@@ -1,6 +1,8 @@
 import unittest
 from amity import Amity
-from models import Room, Office, Living, Staff, Fellow
+from models import Office, Living, Staff, Fellow
+from StringIO import StringIO
+from mock import patch
 
 
 class TestAmityModels(unittest.TestCase):
@@ -130,6 +132,17 @@ class TestAmity(unittest.TestCase):
     def test_total_number_of_romms_in_Amity(self):
         self.assertEquals(len(self.amity.get_rooms()), 20)
 
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_print_result(self, mock_out):
+        result_str = "Result:"
+        self.amity.print_result()
+        self.assertIn(result_str, mock_out.getvalue())
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_print_unallocated(self, mock_out):
+        result_str = "After Allocation, the following could not be allocated"
+        self.amity.print_unallocated()
+        self.assertIn(result_str, mock_out.getvalue())
 
 if __name__ == '__main__':
     unittest.main()

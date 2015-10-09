@@ -200,6 +200,8 @@ class Amity(object):
         '''
         Prints result of allocation
         '''
+        print "Result:"
+        print
         for key in self.rooms:
             for values in self.rooms[key]:
                 print values.name, "({0}, {1})".format(values.designation, values.room_type.upper())
