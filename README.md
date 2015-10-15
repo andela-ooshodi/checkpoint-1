@@ -1,4 +1,4 @@
-# Amity allocation system
+# Amity Allocation System
 
 ### Challenge
 Design an automatic allocation system for amity 
