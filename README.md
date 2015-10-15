@@ -1,6 +1,4 @@
-# Checkpoint 1
-
-## Amity allocation system
+# Amity allocation system
 
 ### Challenge
 Design an automatic allocation system for amity 
