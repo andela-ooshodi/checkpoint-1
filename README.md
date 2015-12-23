@@ -19,24 +19,26 @@ The project structure is divided into models and logic:
 * amity.py is the Allocation logic for Amity 
 
 For help on running the app
-`python amity.py <inputfile.txt> -h --help` 
+- `python amity.py <inputfile.txt> -h --help` 
 
 To run the app
-`python amity.py <inputfile.txt>` 
+- `python amity.py <inputfile.txt>` 
 
 This automatically allocates based on the input text file and prints out a formatted result on your terminal
 
 To save the result in a .txt file (e.g results.txt) instead, run
-`python amity.py > result.txt`
+- `python amity.py > result.txt`
 
 ### Tests
-Install a virtual environment using
-`pip install virtualenv`
+**Virtual Environment**
 
-Create a virtual environment using
-`virtualenv <virtualenvname>`
+1) Install a virtual environment using
+- `pip install virtualenv`
 
-To use virtualenv wrapper instead
+2) Create a virtual environment using
+- `virtualenv <virtualenvname>`
+
+**Virtual Environment Wrapper**
 
 Install a virtual environment using 
 * `pip install virtualenv`
@@ -44,16 +46,16 @@ Install a virtual environment using
 * `pip install virtualenvwrapper-win` for windows
 
 Create a virtual environment using
-`mkvirtualenv <virtualenvname>`
+- `mkvirtualenv <virtualenvname>`
 
 Install the necessary requirements within the virtual environment
-`pip install -r requirements.txt`
+- `pip install -r requirements.txt`
 
 Run coverage
-`coverage run test.py`
+- `coverage run test.py`
 
 View the report of the coverage on your terminal
-`coverage report`
+- `coverage report`
 
 Produce the html of coverage result
-`coverage html`
+- `coverage html`
