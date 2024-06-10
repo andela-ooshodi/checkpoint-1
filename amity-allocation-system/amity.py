@@ -54,8 +54,8 @@ class Amity(object):
                 if(room not in self.rooms[room.room_type]):
                     self.rooms[room.room_type].append(room)
         except AttributeError:
-            print "Can't determine if {} is".format(room),
-            print "an 'office' or a 'living space'"
+            print("Can't determine if {} is".format(room))
+            print("an 'office' or a 'living space'")
 
     def add_person(self, person):
         '''
@@ -205,23 +205,23 @@ class Amity(object):
         '''
         Prints result of allocation
         '''
-        print "Result:"
-        print "\n"
+        print("Result:")
+        print("\n")
         for key in self.rooms:
             for values in self.rooms[key]:
-                print values.name, "({0}, {1})".format(values.designation, values.room_type.upper())
-                print values.get_members()
-                print "\n"
+                print(values.name, "({0}, {1})".format(values.designation, values.room_type.upper()))
+                print(values.get_members())
+                print("\n")
 
     def print_unallocated(self):
         '''
         Prints a persons not allocated
         '''
-        print "After Allocation, the following could not be allocated"
+        print("After Allocation, the following could not be allocated")
         for key in self.unallocated:
-            print "{}:".format(key)
+            print("{}:".format(key))
             person = [person.name for person in self.unallocated[key]]
-            print person
+            print(person)
             print
 
 if __name__ == '__main__':
